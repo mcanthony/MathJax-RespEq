@@ -166,6 +166,11 @@ MathJax.Hub.Register.StartupHook('Sre Ready', function() {
       }
       // If walker is active we redirect there.
       if (Explorer.walker && Explorer.walker.isActive()) {
+        if (event.keyCode === KEY.RETURN) {
+          Explorer.DisplayBox(Explorer.walker.getFocus().getPrimary());
+          FALSE(event);
+          return;
+        }
         var move = Explorer.walker.move(event.keyCode);
         if (move === null) return;
         if (move) {
@@ -195,7 +200,7 @@ MathJax.Hub.Register.StartupHook('Sre Ready', function() {
     ActivateWalker: function(math) {
       Explorer.AddSpeech(math);
       var speechGenerator = new sre.DirectSpeechGenerator();
-      Explorer.walker = new sre.SemanticWalker(math, speechGenerator);
+      Explorer.walker = new sre.SyntaxWalker(math, speechGenerator);
       Explorer.highlighter = sre.HighlighterFactory.highlighter(
           {color: Lab.background, alpha: .2},
           {color: Lab.foreground, alpha: 1},
@@ -256,6 +261,29 @@ MathJax.Hub.Register.StartupHook('Sre Ready', function() {
     //
     Speak: function(speech) {
       Explorer.speechDiv.textContent = speech;
+    },
+    //
+    // Displays an input box.
+    //
+    DisplayBox: function(node) {
+      var offsetX = window.pageXOffset || document.documentElement.scrollLeft;
+      var offsetY = window.pageYOffset || document.documentElement.scrollTop;
+      var rect = node.getBoundingClientRect();
+      // var x = (rect.right + rect.left) / 2 + offsetX;
+      // var y = (rect.bottom + rect.top) / 2 + offsetY;
+      var x = rect.right + offsetX;
+      var y = rect.bottom + offsetY;
+      var div = MathJax.HTML.Element(
+        'div',
+        {style: {position:"absolute", left:0, top:0, "z-index":200,
+                 width:"100%", height:"100%", border:0, padding:0, margin:0}});
+      div.style.left = x+'px';
+      div.style.top = y+'px';
+      var input = MathJax.HTML.Element(
+        'input', {type: 'text',
+                  value: node.getAttribute('data-semantic-type')});
+      div.appendChild(input);
+      node.parentNode.insertBefore(div, node.nextSibling);
     }
   };
 
