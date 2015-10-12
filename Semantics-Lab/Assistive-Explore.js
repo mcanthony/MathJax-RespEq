@@ -265,6 +265,25 @@ MathJax.Hub.Register.StartupHook('Sre Ready', function() {
     //
     // Displays an input box.
     //
+    AttributeBox: function(node, attr) {
+      return MathJax.HTML.Element(
+        'div', {id: 'MathJax_Display_Box'
+                // style: {
+                //   margin: 'auto 5px', background: 'transparent'}
+               },
+        [['input', {type: 'text',
+                    value: node.getAttribute('data-semantic-' + attr)
+                    // style: {padding: '1px 1em'}
+                   }],
+         ['span', {},//style: {padding: '1px 1em'}},
+          [attr]]
+         ]);
+    },
+    ResetBox: function() {
+      return MathJax.HTML.Element(
+        'div', {id: 'MathJax_Cancel_Button', style: {'text-align': 'right'}},
+        [['input', {type: 'submit', value: 'Cancel'}]]);
+    },
     DisplayBox: function(node) {
       var offsetX = window.pageXOffset || document.documentElement.scrollLeft;
       var offsetY = window.pageYOffset || document.documentElement.scrollTop;
@@ -275,14 +294,31 @@ MathJax.Hub.Register.StartupHook('Sre Ready', function() {
       var y = rect.bottom + offsetY;
       var div = MathJax.HTML.Element(
         'div',
-        {style: {position:"absolute", left:0, top:0, "z-index":200,
-                 width:"100%", height:"100%", border:0, padding:0, margin:0}});
+        {style: {
+          position:"absolute", "background-color":"white", color:"black",
+          width:"auto", padding: "5px 0px",
+        border:"1px solid #CCCCCC", margin:0, cursor:"default",
+        font: "menu", "text-align":"left", "text-indent":0, "text-transform":"none",
+        "line-height":"normal", "letter-spacing":"normal", "word-spacing":"normal",
+        "word-wrap":"normal", "white-space":"nowrap", "float":"none", "z-index":200,
+
+        "border-radius": "5px",                     // Opera 10.5 and IE9
+        "-webkit-border-radius": "5px",             // Safari and Chrome
+        "-moz-border-radius": "5px",                // Firefox
+        "-khtml-border-radius": "5px",              // Konqueror
+
+        "box-shadow":"0px 10px 20px #808080",         // Opera 10.5 and IE9
+        "-webkit-box-shadow":"0px 10px 20px #808080", // Safari 3 and Chrome
+        "-moz-box-shadow":"0px 10px 20px #808080",    // Forefox 3.5
+        "-khtml-box-shadow":"0px 10px 20px #808080",  // Konqueror
+        filter: "progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')" // IE
+      }});
       div.style.left = x+'px';
       div.style.top = y+'px';
-      var input = MathJax.HTML.Element(
-        'input', {type: 'text',
-                  value: node.getAttribute('data-semantic-type')});
-      div.appendChild(input);
+      ['type', 'role', 'speech'].forEach(function(x) {
+        div.appendChild(Explorer.AttributeBox(node, x));
+      });
+      // div.appendChild(Explorer.ResetBox());
       node.parentNode.insertBefore(div, node.nextSibling);
     }
   };
